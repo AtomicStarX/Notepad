@@ -1,9 +1,14 @@
+
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author alu53788313f
@@ -13,8 +18,21 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+    private BufferedReader input;
+    private PrintWriter output;
+    private File file;
+    private Scanner scanner;
+
     public MainFrame() {
         initComponents();
+        initFields();
+    }
+
+    private void initFields() {
+        input = null;
+        output = null;
+        file = null;
+        scanner = null;
     }
 
     /**
@@ -35,16 +53,17 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        BtnQuickSave = new javax.swing.JButton();
+        BtnLoad = new javax.swing.JButton();
+        textLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textArea = new javax.swing.JTextArea();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        BtnNew = new javax.swing.JMenuItem();
+        BtnSave = new javax.swing.JMenuItem();
+        BtnExit = new javax.swing.JMenuItem();
+        BtnSaveAs = new javax.swing.JCheckBoxMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
@@ -71,47 +90,71 @@ public class MainFrame extends javax.swing.JFrame {
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("jButton1");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        BtnQuickSave.setText("Guardar");
+        BtnQuickSave.setFocusable(false);
+        BtnQuickSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        BtnQuickSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        BtnQuickSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnQuickSaveActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(BtnQuickSave);
 
-        jButton2.setText("jButton2");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton2);
+        BtnLoad.setText("Cargar");
+        BtnLoad.setFocusable(false);
+        BtnLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        BtnLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(BtnLoad);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
-        jLabel1.setText("jLabel1");
-        getContentPane().add(jLabel1, java.awt.BorderLayout.PAGE_END);
+        textLabel.setText("textLabel");
+        getContentPane().add(textLabel, java.awt.BorderLayout.PAGE_END);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        textArea.setColumns(20);
+        textArea.setRows(5);
+        jScrollPane1.setViewportView(textArea);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jMenu4.setText("File");
 
-        jMenuItem2.setText("New");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        BtnNew.setText("New");
+        BtnNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                BtnNewActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem2);
+        jMenu4.add(BtnNew);
 
-        jMenuItem3.setText("Abrir fichero...");
-        jMenu4.add(jMenuItem3);
+        BtnSave.setText("Abrir fichero...");
+        BtnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnSaveActionPerformed(evt);
+            }
+        });
+        jMenu4.add(BtnSave);
 
-        jMenuItem5.setText("Guardar");
-        jMenu4.add(jMenuItem5);
+        BtnExit.setText("Guardar");
+        BtnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnExitActionPerformed(evt);
+            }
+        });
+        jMenu4.add(BtnExit);
+
+        BtnSaveAs.setSelected(true);
+        BtnSaveAs.setText("Guardar como ...");
+        jMenu4.add(BtnSaveAs);
         jMenu4.add(jSeparator2);
 
         jMenuItem8.setText("Salir");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
         jMenu4.add(jMenuItem8);
 
         jMenuBar2.add(jMenu4);
@@ -131,9 +174,45 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void BtnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnNewActionPerformed
+
+    }//GEN-LAST:event_BtnNewActionPerformed
+
+    private void BtnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSaveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_BtnSaveActionPerformed
+
+    private void BtnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnExitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BtnExitActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void BtnQuickSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnQuickSaveActionPerformed
+        try {
+            input = new BufferedReader(new FileReader(textArea.getText()));
+            output = new PrintWriter(new FileWriter("puntual.txt"));
+            file = new File(textArea.getText());
+            scanner = new Scanner(file);
+            String line;
+            while ((line = input.readLine()) != null) {
+                output.println(line);
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found");
+        } catch (IOException ex) {
+            System.out.println("IOException");
+        } finally {
+            if (input != null) {
+                input.close();
+            }
+            if (output != null) {
+                output.close();
+            }
+        }
+    }//GEN-LAST:event_BtnQuickSaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -171,9 +250,12 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuItem BtnExit;
+    private javax.swing.JButton BtnLoad;
+    private javax.swing.JMenuItem BtnNew;
+    private javax.swing.JButton BtnQuickSave;
+    private javax.swing.JMenuItem BtnSave;
+    private javax.swing.JCheckBoxMenuItem BtnSaveAs;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -184,16 +266,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTextArea textArea;
+    private javax.swing.JLabel textLabel;
     // End of variables declaration//GEN-END:variables
 }
